@@ -1,0 +1,19 @@
+# Paths
+iwad: assets/iwad/freedoom2.wad    # point to your IWAD (Freedoom recommended)
+pwad: ./assets/maps/demo_e1m1.wad  # tiny arena; replace with your PWAD
+
+# Audio
+music:
+  title: ./assets/music/title_loop.ogg
+  level: ./assets/music/level_loop.ogg
+
+# Enemy class -> brain module
+brains:
+  marine: brains/marine_basic.py   # zombieman
+  imp:    brains/imp_spicy.py      # imp
+  pinkie: brains/pinkie_rush.py    # demon
+
+# Performance budgets
+budgets:
+  per_enemy_ms: 10
+  llm_every_n_ticks: 6
