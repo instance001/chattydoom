@@ -1,1 +1,1 @@
-Drop CC0/CC-BY sound effects here. Keep license/attribution files.
+﻿Drop appropriately licensed sound effects here. Keep license/attribution files.

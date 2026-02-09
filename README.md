@@ -1,4 +1,4 @@
-# ChattyDoom Barebones (v0.1)
+﻿# ChattyDoom Barebones (v0.1)
 
 A 60-second VizDoom sandbox for experimenting with modular enemy brains. It ships with a tiny E1M1-style arena placeholder, three sample enemies, and a minimal runner that calls Python brains on each tick.
 
@@ -34,7 +34,7 @@ A 60-second VizDoom sandbox for experimenting with modular enemy brains. It ship
 ## Modding
 - Swap brains: add a new module under `brains/` and register it in `config.yaml`.
 - Swap maps: drop your PWAD in `assets/maps/` and point `config.yaml.pwad` to it.
-- Audio: place CC0/CC-BY loops in `assets/music/` and wire in `config.yaml`. Keep attribution files with the assets.
+- Audio: place appropriately licensed loops in `assets/music/` and wire in `config.yaml`. Keep attribution files with the assets.
 - The `engine/state_adapter.py` currently falls back to heuristics for LOS/dist; it already exposes player position/angle/health/armor/ammo if the config exports them—wire in real actor queries when you add proper enemy hooks.
 
 ## Repo structure
