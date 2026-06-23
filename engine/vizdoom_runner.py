@@ -34,6 +34,8 @@ if str(ROOT) not in sys.path:
 
 CONFIG_PATH = ROOT / "config.yaml"
 MAX_TICKS = 60 * 60  # ~60 seconds at 60 tics
+FMI_SPLASH_PATH = ROOT / "assets" / "branding" / "fmi-splash-wordmark.png"
+FMI_SPLASH_DURATION_MS = 3000
 
 
 def load_config(path: Path) -> dict:
@@ -42,6 +44,68 @@ def load_config(path: Path) -> dict:
         raise SystemExit(f"Config file missing: {path}")
     with path.open("r", encoding="utf-8") as handle:
         return yaml.safe_load(handle) or {}
+
+
+def show_startup_splash() -> None:
+    """Best-effort FMI splash shown before the VizDoom window boots."""
+    if not FMI_SPLASH_PATH.exists():
+        return
+
+    try:
+        import tkinter as tk
+    except Exception:
+        return
+
+    root = None
+    try:
+        root = tk.Tk()
+        root.title("ChattyDoom")
+        root.configure(bg="#f6f4ef")
+        root.overrideredirect(True)
+        root.attributes("-topmost", True)
+
+        image = tk.PhotoImage(file=str(FMI_SPLASH_PATH))
+        width = image.width()
+        height = image.height()
+        screen_w = root.winfo_screenwidth()
+        screen_h = root.winfo_screenheight()
+        x = max((screen_w - width) // 2, 0)
+        y = max((screen_h - height - 80) // 2, 0)
+        root.geometry(f"{width}x{height + 80}+{x}+{y}")
+
+        panel = tk.Frame(root, bg="#f6f4ef", padx=18, pady=18)
+        panel.pack(fill="both", expand=True)
+
+        image_label = tk.Label(panel, image=image, bg="#f6f4ef", borderwidth=0)
+        image_label.image = image
+        image_label.pack()
+
+        subtitle = tk.Label(
+            panel,
+            text="Fractal Media Infrastructure",
+            bg="#f6f4ef",
+            fg="#1f1f1f",
+            font=("Segoe UI", 11, "bold"),
+        )
+        subtitle.pack(pady=(12, 0))
+
+        helper = tk.Label(
+            panel,
+            text="Launching ChattyDoom...",
+            bg="#f6f4ef",
+            fg="#4a4a4a",
+            font=("Segoe UI", 10),
+        )
+        helper.pack(pady=(4, 0))
+
+        root.after(FMI_SPLASH_DURATION_MS, root.destroy)
+        root.mainloop()
+    except Exception:
+        if root is not None:
+            try:
+                root.destroy()
+            except Exception:
+                pass
 
 
 def load_brain(path: str) -> Callable[[dict], dict]:
@@ -210,6 +274,9 @@ def main():
     args = parser.parse_args()
 
     config = load_config(CONFIG_PATH)
+    print("ChattyDoom stewarded within Fractal Media Infrastructure.")
+    print("Uses VizDoom plus user-supplied legal Doom-compatible assets such as Freedoom.")
+    show_startup_splash()
     game = boot_game(config)
 
     if args.auto:
