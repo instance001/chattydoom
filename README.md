@@ -8,6 +8,30 @@ A 60-second VizDoom sandbox for experimenting with modular enemy brains. It ship
 - VizDoom config in `engine/basic.cfg` for quick windowed runs, exposing useful game variables to brains.
 - AGPL-licensed code and no bundled id Software assets.
 
+## Brain Tick Loop Map
+
+```mermaid
+flowchart TB
+    config["config.yaml<br/>IWAD/PWAD/music paths + enemy brain mapping"] --> runner["VizDoom runner<br/>engine/vizdoom_runner.py"]
+    assets["assets/<br/>legal IWAD, PWAD, music, sfx"] --> runner
+    basic["engine/basic.cfg<br/>exported game variables"] --> runner
+
+    runner --> state["State adapter<br/>player position, angle, health, armor, ammo<br/>LOS / distance heuristics"]
+    state --> brains["brains/<br/>marine, imp, pinkie, custom modules"]
+    brains --> decision["decide(state)<br/>action + confidence"]
+    decision --> actions["Action adapter<br/>brain action -> VizDoom controls"]
+    actions --> runner
+
+    runner --> mode{"Run mode"}
+    mode --> manual["Manual player<br/>WASD, arrows, sprint, shoot, use"]
+    mode --> auto["Auto demo<br/>roughly 60-second sandbox drive"]
+
+    modder["Modder"] --> newBrain["Add brain module<br/>register in config.yaml"]
+    modder --> newMap["Swap PWAD / music<br/>update config paths"]
+    newBrain --> brains
+    newMap --> assets
+```
+
 ## Quickstart
 1. Install Python 3.10+.
 2. Create a virtualenv and install deps:
