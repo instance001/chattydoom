@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+assets/iwad/*.wad
+assets/maps/*.wad
+!assets/maps/demo_e1m1.wad
+assets/music/*
+!assets/music/readme.txt
+assets/sfx/*
+!assets/sfx/readme.txt

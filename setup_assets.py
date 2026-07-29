@@ -10,14 +10,15 @@ import zipfile
 from pathlib import Path
 
 API_URL = "https://api.github.com/repos/freedoom/freedoom/releases/latest"
-DEST_WAD = Path("assets/iwad/freedoom2.wad")
-CONFIG_PATH = Path("config.yaml")
+ROOT = Path(__file__).resolve().parent
+DEST_WAD = ROOT / "assets" / "iwad" / "freedoom2.wad"
+CONFIG_PATH = ROOT / "config.yaml"
 IWAD_VALUE = "assets/iwad/freedoom2.wad"
 USER_AGENT = {"User-Agent": "chattydoom-setup/1.1"}
 
 
-def ensure_dest_dir():
-    DEST_WAD.parent.mkdir(parents=True, exist_ok=True)
+def ensure_dest_dir(dest: Path = DEST_WAD):
+    dest.parent.mkdir(parents=True, exist_ok=True)
 
 
 def fetch_latest_zip_url() -> tuple[str, str]:
@@ -50,18 +51,17 @@ def download_file(url: str, dest: Path):
         shutil.copyfileobj(resp, fh)
 
 
-def extract_wad(zip_path: Path, wad_name: str = "freedoom2.wad") -> Path:
+def extract_wad(zip_path: Path, extract_dir: Path, wad_name: str = "freedoom2.wad") -> Path:
     with zipfile.ZipFile(zip_path) as zf:
         member = next((n for n in zf.namelist() if n.lower().endswith(wad_name)), None)
         if not member:
             raise SystemExit(f"{wad_name} not found in archive {zip_path.name}")
-        tmpdir = Path(tempfile.mkdtemp())
-        zf.extract(member, tmpdir)
-        return tmpdir / member
+        zf.extract(member, extract_dir)
+        return extract_dir / member
 
 
 def place_wad(source: Path, dest: Path):
-    ensure_dest_dir()
+    ensure_dest_dir(dest)
     shutil.copy2(source, dest)
 
 
@@ -93,11 +93,12 @@ def main():
     print("Fetching latest Freedoom release metadata...")
     zip_url, zip_name = fetch_latest_zip_url()
     with tempfile.TemporaryDirectory() as tmpdir:
-        zip_path = Path(tmpdir) / zip_name
+        work_dir = Path(tmpdir)
+        zip_path = work_dir / zip_name
         print(f"Downloading {zip_name} ...")
         download_file(zip_url, zip_path)
         print("Extracting freedoom2.wad ...")
-        wad_path = extract_wad(zip_path)
+        wad_path = extract_wad(zip_path, work_dir)
         print(f"Copying to {DEST_WAD} ...")
         place_wad(wad_path, DEST_WAD)
 
